@@ -4,7 +4,7 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
 import { Button, TextField } from "@mui/material";
 import { styled } from "styled-components";
-import { useMutation, useQuery } from "@apollo/client";
+import { useLazyQuery, useMutation } from "@apollo/client";
 import {
   ADD_ITEM_MUTATION,
   GET_TODO_LIST,
@@ -12,7 +12,7 @@ import {
   DELETE_ITEM_MUTATION,
 } from "./queries";
 import { Cancel, Delete, Edit, Save } from "@mui/icons-material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { getOperationName } from "@apollo/client/utilities";
 
 const Container = styled.div`
@@ -68,9 +68,9 @@ const EditContainer = styled.form`
 
 export default function CheckboxList() {
   const [item, setItem] = useState("");
-  const [editingIndex, setEditingIndex] = useState(null);
+  const [editingId, setEditingId] = useState(null);
   const [editingValue, setEditingValue] = useState("");
-  const { data } = useQuery(GET_TODO_LIST);
+  const [fetchFilteredItems, { data }] = useLazyQuery(GET_TODO_LIST);
 
   const [addItem] = useMutation(ADD_ITEM_MUTATION);
   const [updateItem] = useMutation(UPDATE_ITEM_MUTATION);
@@ -103,8 +103,8 @@ export default function CheckboxList() {
     });
   };
 
-  const startUpdate = (index, value) => {
-    setEditingIndex(index);
+  const startUpdate = (id, value) => {
+    setEditingId(id);
     setEditingValue(value);
   };
 
@@ -120,14 +120,23 @@ export default function CheckboxList() {
       refetchQueries: [getOperationName(GET_TODO_LIST)],
     });
 
-    setEditingIndex(null);
+    setEditingId(null);
     setEditingValue("");
   };
 
-  const onFilter = async (event) => {
-    console.log(onFilter);
-    // Aqui você irá implementar a chamada para o backend para fazer o filtro
+  const onFilter = async () => {
+    fetchFilteredItems({
+      variables: {
+        filter: {
+          name: item,
+        },
+      },
+    });
   };
+
+  useEffect(() => {
+    fetchFilteredItems();
+  }, []);
 
   return (
     <Container>
@@ -163,10 +172,10 @@ export default function CheckboxList() {
         </ContainerTop>
         <List sx={{ width: "100%" }}>
           <ContainerListItem>
-            {data?.todoList?.map((value, index) => {
+            {data?.todoList?.map((value) => {
               return (
                 <ListItem
-                  key={index}
+                  key={value.id}
                   disablePadding
                   sx={{
                     borderRadius: "5px",
@@ -175,7 +184,7 @@ export default function CheckboxList() {
                   }}
                 >
                   <ListItemButton dense>
-                    {editingIndex === index ? (
+                    {editingId === value.id ? (
                       <EditContainer
                         onSubmit={(event) => {
                           event.preventDefault();
@@ -192,7 +201,7 @@ export default function CheckboxList() {
                           <Save />
                         </Button>
                         <Button color="error">
-                          <Cancel onClick={() => setEditingIndex(null)} />
+                          <Cancel onClick={() => setEditingId(null)} />
                         </Button>
                       </EditContainer>
                     ) : (
@@ -200,7 +209,7 @@ export default function CheckboxList() {
                         <ListItemText primary={value.name} />
                         <Button type="submit" color="info">
                           <Edit
-                            onClick={() => startUpdate(index, value.name)}
+                            onClick={() => startUpdate(value.id, value.name)}
                           />
                         </Button>
                         <Button color="error">

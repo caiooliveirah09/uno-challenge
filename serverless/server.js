@@ -21,7 +21,6 @@ const typeDefs = `#graphql
   }
 
   input ItemFilter {
-    id: Int
     name: String
   }
 
@@ -39,8 +38,14 @@ const typeDefs = `#graphql
 const resolvers = {
   Query: {
     todoList: (_, { filter }) => {
-      // Aqui você irá implementar o filtro dos itens
-      console.log(filter);
+      const { name } = filter || {};
+
+      if (name && name.trim()) {
+        return TODO_LIST.filter((item) =>
+          item.name.toLowerCase().includes(name.toLowerCase())
+        );
+      }
+
       return TODO_LIST;
     },
   },
