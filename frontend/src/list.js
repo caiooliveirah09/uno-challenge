@@ -5,8 +5,12 @@ import ListItemText from "@mui/material/ListItemText";
 import { Button, TextField } from "@mui/material";
 import { styled } from "styled-components";
 import { useMutation, useQuery } from "@apollo/client";
-import { ADD_ITEM_MUTATION, GET_TODO_LIST } from "./queries";
-import { Delete, Edit } from "@mui/icons-material";
+import {
+  ADD_ITEM_MUTATION,
+  GET_TODO_LIST,
+  UPDATE_ITEM_MUTATION,
+} from "./queries";
+import { Cancel, Delete, Edit, Save } from "@mui/icons-material";
 import { useState } from "react";
 import { getOperationName } from "@apollo/client/utilities";
 
@@ -56,11 +60,19 @@ const Title = styled.div`
   font-size: 28px;
 `;
 
+const EditContainer = styled.form`
+  display: flex;
+  width: 100%;
+`;
+
 export default function CheckboxList() {
   const [item, setItem] = useState("");
+  const [editingIndex, setEditingIndex] = useState(null);
+  const [editingValue, setEditingValue] = useState("");
   const { data } = useQuery(GET_TODO_LIST);
 
   const [addItem] = useMutation(ADD_ITEM_MUTATION);
+  const [updateItem] = useMutation(UPDATE_ITEM_MUTATION);
 
   const onSubmit = async (event) => {
     event.preventDefault();
@@ -81,11 +93,27 @@ export default function CheckboxList() {
     // Aqui você irá implementar a chamada para o backend de remoção de item
   };
 
-  const onUpdate = async (event) => {
-    console.log(onUpdate);
-    // Aqui você irá implementar a chamada para o backend de edição de item
+  const startUpdate = (index, value) => {
+    setEditingIndex(index);
+    setEditingValue(value);
   };
 
+  const onUpdate = async (id) => {
+    await updateItem({
+      variables: {
+        values: {
+          id: id,
+          name: editingValue,
+        },
+      },
+      awaitRefetchQueries: true,
+      refetchQueries: [getOperationName(GET_TODO_LIST)],
+    });
+
+    setEditingIndex(null);
+    setEditingValue("");
+  };
+  
   const onFilter = async (event) => {
     console.log(onFilter);
     // Aqui você irá implementar a chamada para o backend para fazer o filtro
@@ -137,9 +165,39 @@ export default function CheckboxList() {
                   }}
                 >
                   <ListItemButton dense>
-                    <ListItemText id={index} primary={value?.name} />
-                    <Edit onClick={onUpdate} />
-                    <Delete onClick={onDelete} />
+                    {editingIndex === index ? (
+                      <EditContainer
+                        onSubmit={(event) => {
+                          event.preventDefault();
+                          onUpdate(value.id);
+                        }}
+                      >
+                        <TextField
+                          value={editingValue}
+                          onChange={(e) => setEditingValue(e.target.value)}
+                          variant="standard"
+                          fullWidth
+                        />
+                        <Button type="submit" color="success">
+                          <Save />
+                        </Button>
+                        <Button color="error">
+                          <Cancel onClick={() => setEditingIndex(null)} />
+                        </Button>
+                      </EditContainer>
+                    ) : (
+                      <>
+                        <ListItemText primary={value.name} />
+                        <Button type="submit" color="info">
+                          <Edit
+                            onClick={() => startUpdate(index, value.name)}
+                          />
+                        </Button>
+                        <Button color="error">
+                          <Delete onClick={onDelete} />
+                        </Button>
+                      </>
+                    )}
                   </ListItemButton>
                 </ListItem>
               );

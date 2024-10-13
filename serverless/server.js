@@ -52,8 +52,10 @@ const resolvers = {
       });
     },
     updateItem: (_, { values: { id, name } }) => {
-      // Aqui você irá implementar a edição do item
-      console.log(id, name);
+      const itemIndex = TODO_LIST.findIndex((item) => item.id === id);
+      if (itemIndex === -1) return false;
+      TODO_LIST[itemIndex].name = name;
+      return true;
     },
     deleteItem: (_, { id }) => {
       // Aqui você irá implementar a remoção do item
