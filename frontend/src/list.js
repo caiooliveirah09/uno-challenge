@@ -78,6 +78,9 @@ export default function CheckboxList() {
 
   const onSubmit = async (event) => {
     event.preventDefault();
+
+    if (!item.trim()) return;
+
     await addItem({
       variables: {
         values: {
