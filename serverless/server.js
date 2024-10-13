@@ -46,6 +46,8 @@ const resolvers = {
   },
   Mutation: {
     addItem: (_, { values: { name } }) => {
+      if (TODO_LIST.find((item) => item.name === name)) return false;
+
       TODO_LIST.push({
         id: getRandomInt(),
         name,
