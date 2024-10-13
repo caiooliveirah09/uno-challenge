@@ -9,6 +9,7 @@ import {
   ADD_ITEM_MUTATION,
   GET_TODO_LIST,
   UPDATE_ITEM_MUTATION,
+  DELETE_ITEM_MUTATION,
 } from "./queries";
 import { Cancel, Delete, Edit, Save } from "@mui/icons-material";
 import { useState } from "react";
@@ -73,6 +74,7 @@ export default function CheckboxList() {
 
   const [addItem] = useMutation(ADD_ITEM_MUTATION);
   const [updateItem] = useMutation(UPDATE_ITEM_MUTATION);
+  const [deleteItem] = useMutation(DELETE_ITEM_MUTATION);
 
   const onSubmit = async (event) => {
     event.preventDefault();
@@ -88,9 +90,14 @@ export default function CheckboxList() {
     setItem("");
   };
 
-  const onDelete = async (event) => {
-    console.log(onDelete);
-    // Aqui você irá implementar a chamada para o backend de remoção de item
+  const onDelete = async (id) => {
+    await deleteItem({
+      variables: {
+        id: id,
+      },
+      awaitRefetchQueries: true,
+      refetchQueries: [getOperationName(GET_TODO_LIST)],
+    });
   };
 
   const startUpdate = (index, value) => {
@@ -113,7 +120,7 @@ export default function CheckboxList() {
     setEditingIndex(null);
     setEditingValue("");
   };
-  
+
   const onFilter = async (event) => {
     console.log(onFilter);
     // Aqui você irá implementar a chamada para o backend para fazer o filtro
@@ -194,7 +201,7 @@ export default function CheckboxList() {
                           />
                         </Button>
                         <Button color="error">
-                          <Delete onClick={onDelete} />
+                          <Delete onClick={() => onDelete(value.id)} />
                         </Button>
                       </>
                     )}

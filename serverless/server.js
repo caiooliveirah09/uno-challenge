@@ -58,8 +58,10 @@ const resolvers = {
       return true;
     },
     deleteItem: (_, { id }) => {
-      // Aqui você irá implementar a remoção do item
-      console.log(id);
+      const itemIndex = TODO_LIST.findIndex((item) => item.id === id);
+      if (itemIndex === -1) return false;
+      TODO_LIST.splice(itemIndex, 1);
+      return true;
     },
   },
 };
