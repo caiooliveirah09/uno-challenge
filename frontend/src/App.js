@@ -7,6 +7,7 @@ import {
 import { setContext } from "@apollo/client/link/context";
 import "./App.css";
 import List from "./list";
+import { ToastContainer } from "react-toastify";
 
 const httpLink = createHttpLink({
   uri: process.env.REACT_APP_GRAPHQL_URI,
@@ -29,6 +30,7 @@ function App() {
   return (
     <ApolloProvider client={client}>
       <div className="App">
+        <ToastContainer />
         <header className="App-header">
           <List />
         </header>

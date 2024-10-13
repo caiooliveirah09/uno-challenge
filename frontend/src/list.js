@@ -14,6 +14,8 @@ import {
 import { Cancel, Delete, Edit, Save } from "@mui/icons-material";
 import { useEffect, useState } from "react";
 import { getOperationName } from "@apollo/client/utilities";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Container = styled.div`
   display: flex;
@@ -93,9 +95,9 @@ export default function CheckboxList() {
         awaitRefetchQueries: true,
         refetchQueries: [getOperationName(GET_TODO_LIST)],
       });
-      alert(response.data.addItem.message);
+      toast.success(response.data.addItem.message);
     } catch (error) {
-      alert(error.message);
+      toast.error(error.message);
     }
   };
 
@@ -108,9 +110,9 @@ export default function CheckboxList() {
         awaitRefetchQueries: true,
         refetchQueries: [getOperationName(GET_TODO_LIST)],
       });
-      alert(response.data.deleteItem.message);
+      toast.success(response.data.deleteItem.message);
     } catch (error) {
-      alert(error.message);
+      toast.error(error.message);
     }
   };
 
@@ -131,9 +133,12 @@ export default function CheckboxList() {
         awaitRefetchQueries: true,
         refetchQueries: [getOperationName(GET_TODO_LIST)],
       });
-      alert(response.data.updateItem.message);
+      toast.success(response.data.updateItem.message);
     } catch (error) {
-      alert(error.message);
+      toast.error(error.message);
+      if (error.graphQLErrors[0].extensions.code === "ITEM_ALREADY_EXISTS") {
+        return;
+      }
     }
 
     setEditingId(null);
