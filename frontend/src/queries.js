@@ -11,18 +11,24 @@ export const GET_TODO_LIST = gql`
 
 export const ADD_ITEM_MUTATION = gql`
   mutation addItem($values: ItemInput) {
-    addItem(values: $values)
+    addItem(values: $values) {
+      message
+    }
   }
 `;
 
 export const UPDATE_ITEM_MUTATION = gql`
   mutation updateItem($values: ItemInput) {
-    updateItem(values: $values)
+    updateItem(values: $values) {
+      message
+    }
   }
 `;
 
 export const DELETE_ITEM_MUTATION = gql`
   mutation deleteItem($id: Int!) {
-    deleteItem(id: $id)
+    deleteItem(id: $id) {
+      message
+    }
   }
 `;

@@ -79,28 +79,39 @@ export default function CheckboxList() {
   const onSubmit = async (event) => {
     event.preventDefault();
 
-    if (!item.trim()) return;
+    if (!item.trim()) {
+      return;
+    }
 
-    await addItem({
-      variables: {
-        values: {
-          name: item,
+    try {
+      const response = await addItem({
+        variables: {
+          values: {
+            name: item,
+          },
         },
-      },
-      awaitRefetchQueries: true,
-      refetchQueries: [getOperationName(GET_TODO_LIST)],
-    });
-    setItem("");
+        awaitRefetchQueries: true,
+        refetchQueries: [getOperationName(GET_TODO_LIST)],
+      });
+      alert(response.data.addItem.message);
+    } catch (error) {
+      alert(error.message);
+    }
   };
 
   const onDelete = async (id) => {
-    await deleteItem({
-      variables: {
-        id: id,
-      },
-      awaitRefetchQueries: true,
-      refetchQueries: [getOperationName(GET_TODO_LIST)],
-    });
+    try {
+      const response = await deleteItem({
+        variables: {
+          id: id,
+        },
+        awaitRefetchQueries: true,
+        refetchQueries: [getOperationName(GET_TODO_LIST)],
+      });
+      alert(response.data.deleteItem.message);
+    } catch (error) {
+      alert(error.message);
+    }
   };
 
   const startUpdate = (id, value) => {
@@ -109,16 +120,21 @@ export default function CheckboxList() {
   };
 
   const onUpdate = async (id) => {
-    await updateItem({
-      variables: {
-        values: {
-          id: id,
-          name: editingValue,
+    try {
+      const response = await updateItem({
+        variables: {
+          values: {
+            id: id,
+            name: editingValue,
+          },
         },
-      },
-      awaitRefetchQueries: true,
-      refetchQueries: [getOperationName(GET_TODO_LIST)],
-    });
+        awaitRefetchQueries: true,
+        refetchQueries: [getOperationName(GET_TODO_LIST)],
+      });
+      alert(response.data.updateItem.message);
+    } catch (error) {
+      alert(error.message);
+    }
 
     setEditingId(null);
     setEditingValue("");
@@ -221,6 +237,11 @@ export default function CheckboxList() {
                 </ListItem>
               );
             })}
+            {data?.todoList?.length === 0 && (
+              <ListItem>
+                <ListItemText primary="Nenhum item encontrado" />
+              </ListItem>
+            )}
           </ContainerListItem>
         </List>
       </ContainerList>
