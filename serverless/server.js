@@ -13,6 +13,7 @@ function getRandomInt() {
 /**
  * Definição do schema GraphQL.
  * O tipo `Item` representa um item de uma lista de TODOs, com os campos `id` e `name`.
+ * O tipo `Response` é usado para retornar mensagens de sucesso.
  * O input `ItemInput` é usado para adicionar ou atualizar itens na lista.
  * O input `ItemFilter` é usado para filtrar a lista de TODOs pelo nome.
  * A query `todoList` retorna uma lista de itens de TODOs, podendo ser filtrada pelo nome.
