@@ -31,9 +31,9 @@ function App() {
     <ApolloProvider client={client}>
       <div className="App">
         <ToastContainer />
-        <header className="App-header">
+        <main className="App-header">
           <List />
-        </header>
+        </main>
       </div>
     </ApolloProvider>
   );
