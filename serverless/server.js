@@ -1,7 +1,7 @@
 const { ApolloServer } = require("@apollo/server");
 const { startStandaloneServer } = require("@apollo/server/standalone");
 const { TODO_LIST } = require("./makeData");
-const { GraphQLError, GraphQLBoolean } = require("graphql");
+const { GraphQLError } = require("graphql");
 
 /**
  * Gera um número inteiro para utilizar de id

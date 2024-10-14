@@ -1,0 +1,13 @@
+services:
+  frontend:
+    build: ./frontend
+    restart: always
+    ports:
+      - '3000:3000'
+    volumes: 
+       - ./frontend/src:/src
+  backend:
+    build: ./serverless
+    restart: always
+    ports:
+      - '4000:4000'
