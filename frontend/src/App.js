@@ -6,7 +6,7 @@ import {
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
 import "./App.css";
-import List from "./list";
+import TodoList from "./TodoList";
 import { ToastContainer } from "react-toastify";
 
 const httpLink = createHttpLink({
@@ -30,9 +30,9 @@ function App() {
   return (
     <ApolloProvider client={client}>
       <div className="App">
-        <ToastContainer />
-        <main className="App-header">
-          <List />
+        <ToastContainer position="bottom-right" />
+        <main className="App-main">
+          <TodoList />
         </main>
       </div>
     </ApolloProvider>

@@ -11,7 +11,12 @@ import {
   UPDATE_ITEM_MUTATION,
   DELETE_ITEM_MUTATION,
 } from "./queries";
-import { Cancel, Delete, Edit, Save } from "@mui/icons-material";
+import {
+  CancelOutlined,
+  DeleteOutline,
+  EditOutlined,
+  SaveOutlined,
+} from "@mui/icons-material";
 import { useEffect, useState } from "react";
 import { getOperationName } from "@apollo/client/utilities";
 import { toast } from "react-toastify";
@@ -22,11 +27,12 @@ const Container = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  width: 100%;
 `;
 
 const ContainerTop = styled.form`
   display: flex;
-  background-color: #dcdcdc;
+  background-color: white;
   flex-direction: column;
   justify-content: center;
   padding: 10px;
@@ -36,20 +42,30 @@ const ContainerTop = styled.form`
 
 const ContainerList = styled.div`
   display: flex;
-  width: 600px;
-  background-color: #dcdcdc;
+  width: 100%;
+  max-width: 600px;
+  background-color: white;
   flex-direction: column;
-  justify-content: center;
+
   padding: 10px;
   gap: 10px;
   border-radius: 5px;
+
+  min-height: 80vh;
+
+  @media (max-width: 600px) {
+    height: 100vh;
+  }
 `;
 const ContainerListItem = styled.div`
-  background-color: #efefef;
+  background-color: white;
   padding: 10px;
   border-radius: 5px;
   max-height: 400px;
-  overflow: auto;
+
+  @media (min-width: 601px) {
+    overflow: auto;
+  }
 `;
 
 const ContainerButton = styled.div`
@@ -59,8 +75,9 @@ const ContainerButton = styled.div`
 `;
 
 const Title = styled.div`
-  font-weight: bold;
   font-size: 28px;
+  color: #ed6c02;
+  padding: 20px;
 `;
 
 const EditContainer = styled.form`
@@ -68,7 +85,25 @@ const EditContainer = styled.form`
   width: 100%;
 `;
 
-export default function CheckboxList() {
+const ListItemGroup = styled(ListItem)`
+  min-height: 50px;
+
+  button {
+    display: none;
+  }
+
+  &:hover button {
+    display: inline-flex;
+  }
+
+  border-bottom: 1px solid #e0e0e0;
+
+  &:first-child {
+    border-top: 1px solid #e0e0e0;
+  }
+`;
+
+export default function TodoList() {
   const [item, setItem] = useState("");
   const [editingId, setEditingId] = useState(null);
   const [editingValue, setEditingValue] = useState("");
@@ -82,7 +117,7 @@ export default function CheckboxList() {
     event.preventDefault();
 
     if (!item.trim()) {
-      return;
+      return toast.error("Nome do item não pode estar em branco");
     }
 
     try {
@@ -171,12 +206,13 @@ export default function CheckboxList() {
             type="text"
             variant="standard"
             onChange={(e) => setItem(e?.target?.value)}
+            color="warning"
           />
           <ContainerButton>
             <Button
               variant="contained"
               sx={{ width: "100%" }}
-              color="info"
+              color="inherit"
               onClick={onFilter}
             >
               Filtrar
@@ -184,10 +220,10 @@ export default function CheckboxList() {
             <Button
               variant="contained"
               sx={{ width: "100%" }}
-              color="success"
+              color="warning"
               type="submit"
             >
-              Salvar
+              Adicionar tarefa
             </Button>
           </ContainerButton>
         </ContainerTop>
@@ -195,15 +231,7 @@ export default function CheckboxList() {
           <ContainerListItem>
             {data?.todoList?.map((value) => {
               return (
-                <ListItem
-                  key={value.id}
-                  disablePadding
-                  sx={{
-                    borderRadius: "5px",
-                    marginTop: "5px",
-                    marginBottom: "5px",
-                  }}
-                >
+                <ListItemGroup key={value.id} disablePadding>
                   <ListItemButton dense>
                     {editingId === value.id ? (
                       <EditContainer
@@ -216,36 +244,40 @@ export default function CheckboxList() {
                           value={editingValue}
                           onChange={(e) => setEditingValue(e.target.value)}
                           variant="standard"
+                          color="warning"
                           fullWidth
                         />
-                        <Button type="submit" color="success">
-                          <Save />
+                        <Button type="submit" color="inherit">
+                          <SaveOutlined />
                         </Button>
-                        <Button color="error">
-                          <Cancel onClick={() => setEditingId(null)} />
+                        <Button color="inherit">
+                          <CancelOutlined onClick={() => setEditingId(null)} />
                         </Button>
                       </EditContainer>
                     ) : (
                       <>
-                        <ListItemText primary={value.name} />
-                        <Button type="submit" color="info">
-                          <Edit
+                        <ListItemText
+                          primary={value.name}
+                          sx={{ wordBreak: "break-word" }}
+                        />
+                        <Button type="submit" color="inherit">
+                          <EditOutlined
                             onClick={() => startUpdate(value.id, value.name)}
                           />
                         </Button>
-                        <Button color="error">
-                          <Delete onClick={() => onDelete(value.id)} />
+                        <Button color="inherit">
+                          <DeleteOutline onClick={() => onDelete(value.id)} />
                         </Button>
                       </>
                     )}
                   </ListItemButton>
-                </ListItem>
+                </ListItemGroup>
               );
             })}
             {data?.todoList?.length === 0 && (
-              <ListItem>
+              <ListItemGroup>
                 <ListItemText primary="Nenhum item encontrado" />
-              </ListItem>
+              </ListItemGroup>
             )}
           </ContainerListItem>
         </List>
