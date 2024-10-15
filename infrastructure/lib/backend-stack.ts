@@ -63,7 +63,10 @@ export class BackendStack extends cdk.Stack {
 
     applicationLoadBalancedFargateService.targetGroup.configureHealthCheck({
       path: "/graphql?query=%7B__typename%7D",
-      healthyHttpCodes: "400", // Pesquisar sobre como configurar o health check no GraphQL, pois o código 400 não é o correto
+      healthyHttpCodes: "400", 
+      // Pesquisar sobre como configurar o health check no GraphQL, pois o código 400 não é o correto
+      // O path utilizado está correto pro health check de acordo com a documentação, porém retorna 400 ao invés de 200
+      // pois não tem como mandar o header de autorização.
     });
   }
 }
